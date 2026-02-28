@@ -20,10 +20,32 @@ const createSlug = (fileName) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// URLs now point at the development proxy; the proxy will attach the API key
-// and handle CORS. In production you can replace these with your own host.
-const buildUcUrl = (fileId) => `/drive/${fileId}?export=download`;
-const buildAltMediaUrl = (fileId) => `/drive/${fileId}?alt=media`;
+// In development we use the local proxy defined in `setupProxy.js` so that
+// the browser can fetch from Google Drive without CORS or exposing the API
+// key.  The proxy is **not** active on a deployed site (it only runs when
+// `react-scripts start` is used), so in production we construct the full
+// Google URL directly and include the API key query parameter.
+
+const buildUcUrl = (fileId) => {
+  if (process.env.NODE_ENV === "development") {
+    return `/drive/${fileId}?export=download`;
+  }
+  // production: direct API request with key
+  const key = process.env.REACT_APP_GOOGLE_API_KEY;
+  return `https://www.googleapis.com/drive/v3/files/${fileId}?export=download${
+    key ? `&key=${key}` : ""
+  }`;
+};
+
+const buildAltMediaUrl = (fileId) => {
+  if (process.env.NODE_ENV === "development") {
+    return `/drive/${fileId}?alt=media`;
+  }
+  const key = process.env.REACT_APP_GOOGLE_API_KEY;
+  return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media${
+    key ? `&key=${key}` : ""
+  }`;
+};
 
 export const loadMusicDB = async () => {
   // the listing needs a Google API key on the client side. we expect callers
