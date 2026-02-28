@@ -4,6 +4,7 @@ import "./progressBar.css";
 import { IconContext } from "react-icons";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
+import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { loadMusicDB } from "../../resources/musicData";
 
 const MusicPlayer = (props) => {
@@ -17,6 +18,8 @@ const MusicPlayer = (props) => {
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -210,6 +213,27 @@ const MusicPlayer = (props) => {
 
   const progress = (currentTime / duration) * 100 || 0;
 
+  useEffect(() => {
+    if (!audioRef.current) {
+      return;
+    }
+
+    audioRef.current.volume = volume;
+    audioRef.current.muted = isMuted;
+  }, [volume, isMuted]);
+
+  const handleVolumeChange = (event) => {
+    const nextVolume = Number(event.target.value);
+    setVolume(nextVolume);
+    if (nextVolume > 0 && isMuted) {
+      setIsMuted(false);
+    }
+  };
+
+  const toggleMute = () => {
+    setIsMuted((prev) => !prev);
+  };
+
   if (loadingLibrary) {
     return (
       <div className="music-player">Carregando músicas do Google Drive...</div>
@@ -285,6 +309,28 @@ const MusicPlayer = (props) => {
               <BiSkipNext />
             </IconContext.Provider>
           </button>
+        </div>
+
+        <div className="volume-controls">
+          <button
+            className="playButton clickable"
+            onClick={toggleMute}
+            title={isMuted ? "Ativar som" : "Silenciar"}
+          >
+            <IconContext.Provider value={{ size: "1.8em", color: "#000000" }}>
+              {isMuted ? <HiSpeakerXMark /> : <HiSpeakerWave />}
+            </IconContext.Provider>
+          </button>
+
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+            aria-label="Controle de volume"
+          />
         </div>
 
         <div className="playlist-manager">
