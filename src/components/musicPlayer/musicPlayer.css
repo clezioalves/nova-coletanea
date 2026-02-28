@@ -89,6 +89,23 @@
     padding: 4px 8px;
 }
 
+.playlist-item {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.playlist-buttons {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.reorder-btn {
+    padding: 4px 6px;
+    font-weight: bold;
+    min-width: 32px;
+}
+
 .empty-list {
     color: #777;
     padding: 8px 0;

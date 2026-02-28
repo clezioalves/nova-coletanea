@@ -35,7 +35,13 @@ const MusicPlayer = (props) => {
   }, []);
 
   const selectedSongs = useMemo(
-    () => songs.filter((song) => selectedSongIds.includes(song.id)),
+    () => {
+      // Manter a ordem de selectedSongIds (ordem de inclusão/reordenação)
+      const songMap = new Map(songs.map((song) => [song.id, song]));
+      return selectedSongIds
+        .map((id) => songMap.get(id))
+        .filter((song) => song !== undefined);
+    },
     [songs, selectedSongIds]
   );
 
@@ -184,6 +190,24 @@ const MusicPlayer = (props) => {
     setSelectedSongIds((prev) => prev.filter((id) => id !== songId));
   };
 
+  const moveSongUp = useCallback((index) => {
+    if (index <= 0) return;
+    setSelectedSongIds((prev) => {
+      const newIds = [...prev];
+      [newIds[index - 1], newIds[index]] = [newIds[index], newIds[index - 1]];
+      return newIds;
+    });
+  }, []);
+
+  const moveSongDown = useCallback((index) => {
+    setSelectedSongIds((prev) => {
+      if (index >= prev.length - 1) return prev;
+      const newIds = [...prev];
+      [newIds[index], newIds[index + 1]] = [newIds[index + 1], newIds[index]];
+      return newIds;
+    });
+  }, []);
+
   const progress = (currentTime / duration) * 100 || 0;
 
   if (loadingLibrary) {
@@ -289,12 +313,32 @@ const MusicPlayer = (props) => {
           <div className="playlist-column">
             <h3>Lista de reprodução</h3>
             <ul className="song-list">
-              {selectedSongs.map((song) => (
-                <li key={song.id} className="song-item">
+              {selectedSongs.map((song, index) => (
+                <li key={song.id} className="song-item playlist-item">
                   <span>{song.title}</span>
-                  <button onClick={() => removeSongFromPlaylist(song.id)}>
-                    Remover
-                  </button>
+                  <div className="playlist-buttons">
+                    {index > 0 && (
+                      <button
+                        onClick={() => moveSongUp(index)}
+                        title="Mover para cima"
+                        className="reorder-btn"
+                      >
+                        ↑
+                      </button>
+                    )}
+                    {index < selectedSongs.length - 1 && (
+                      <button
+                        onClick={() => moveSongDown(index)}
+                        title="Mover para baixo"
+                        className="reorder-btn"
+                      >
+                        ↓
+                      </button>
+                    )}
+                    <button onClick={() => removeSongFromPlaylist(song.id)}>
+                      Remover
+                    </button>
+                  </div>
                 </li>
               ))}
               {selectedSongs.length === 0 && (
