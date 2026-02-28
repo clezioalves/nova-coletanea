@@ -21,7 +21,7 @@ function App() {
       <header className="app-toolbar">
         <h1>Nova Coletânea</h1>
         <button className="theme-toggle-btn" onClick={toggleLayoutTheme}>
-          {isDarkLayout ? "Modo claro" : "Layout black"}
+          {isDarkLayout ? "Modo claro" : "Modo escuro"}
         </button>
       </header>
 
