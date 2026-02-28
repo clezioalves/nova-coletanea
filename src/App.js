@@ -6,7 +6,7 @@ import "./App.css";
 
 function App() {
   const [dataForLyrics, setDataForLyrics] = useState({});
-  const [isDarkLayout, setIsDarkLayout] = useState(false);
+  const [isDarkLayout, setIsDarkLayout] = useState(true);
 
   const handleLyricsDataFromChild = (data) => {
     setDataForLyrics(data);
