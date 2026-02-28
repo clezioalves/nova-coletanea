@@ -238,7 +238,7 @@ const MusicPlayer = (props) => {
 
   if (loadingLibrary) {
     return (
-      <div className="music-player">Carregando músicas do Google Drive...</div>
+      <div className="music-player">Carregando louvores do Google Drive...</div>
     );
   }
 
@@ -261,7 +261,7 @@ const MusicPlayer = (props) => {
             ? loadingTrack
               ? "Loading..."
               : currentSong.album
-            : "Selecione músicas para reproduzir"}
+            : "Selecione louvores para reproduzir"}
         </h2>
 
         <div className="progress-container">
@@ -353,7 +353,7 @@ const MusicPlayer = (props) => {
                 <input
                   className="filter-input"
                   type="text"
-                  placeholder="Filtrar músicas"
+                  placeholder="Filtrar louvores"
                   value={filterTerm}
                   onChange={(event) => setFilterTerm(event.target.value)}
                 />
@@ -365,7 +365,7 @@ const MusicPlayer = (props) => {
                     </li>
                   ))}
                   {filteredAvailableSongs.length === 0 && (
-                    <li className="empty-list">Nenhuma música disponível.</li>
+                    <li className="empty-list">Nenhum louvor disponível.</li>
                   )}
                 </ul>
               </>
@@ -415,7 +415,7 @@ const MusicPlayer = (props) => {
                   </li>
                 ))}
                 {selectedSongs.length === 0 && (
-                  <li className="empty-list">Adicione músicas para começar.</li>
+                  <li className="empty-list">Adicione louvores para começar.</li>
                 )}
               </ul>
             )}

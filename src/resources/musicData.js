@@ -61,7 +61,7 @@ export const loadMusicDB = async () => {
     // should never happen since we have a fallback, but keep the check for
     // completeness in case future changes remove the hardcoded key.
     throw new Error(
-      "Configure REACT_APP_GOOGLE_API_KEY para listar os áudios da pasta pública do Google Drive."
+      "Configure REACT_APP_GOOGLE_API_KEY para listar os louvores da pasta pública do Google Drive."
     );
   }
 
