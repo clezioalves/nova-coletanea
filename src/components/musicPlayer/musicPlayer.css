@@ -1,13 +1,10 @@
 .music-player {
     display: flex;
     align-items: center;
-    /* Vertically center the child elements */
     justify-content: center;
     height: 100%;
-
     background-color: #ffffff;
     border-radius: 25px;
-
 }
 
 .playerTitle {
@@ -30,19 +27,6 @@
     width: 100%;
 }
 
-.musicCover {
-    border-radius: 10%;
-    text-align: center;
-
-
-}
-
-.albumArtImage {
-    width: 350px;
-    height: 350px;
-    border-radius: 25px
-}
-
 .playButton {
     background: none;
     border: none;
@@ -59,8 +43,63 @@
     cursor: pointer;
 }
 
+.playlist-manager {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 20px 20px;
+}
+
+.playlist-column {
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fafafa;
+}
+
+.filter-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.song-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 210px;
+    overflow-y: auto;
+}
+
+.song-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #ececec;
+    padding: 8px 0;
+}
+
+.song-item button {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.empty-list {
+    color: #777;
+    padding: 8px 0;
+}
+
 @media (max-width: 900px) {
     .component {
-        width: 50%;
+        width: 95%;
+    }
+
+    .playlist-manager {
+        grid-template-columns: 1fr;
     }
 }
