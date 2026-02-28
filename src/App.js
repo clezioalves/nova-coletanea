@@ -6,7 +6,7 @@ import "./App.css";
 
 function App() {
   const [dataForLyrics, setDataForLyrics] = useState({});
-  const [isDarkLayout, setIsDarkLayout] = useState(false);
+  const [isDarkLayout, setIsDarkLayout] = useState(true);
 
   const handleLyricsDataFromChild = (data) => {
     setDataForLyrics(data);
@@ -21,7 +21,7 @@ function App() {
       <header className="app-toolbar">
         <h1>Nova Coletânea</h1>
         <button className="theme-toggle-btn" onClick={toggleLayoutTheme}>
-          {isDarkLayout ? "Modo claro" : "Layout black"}
+          {isDarkLayout ? "Modo claro" : "Modo escuro"}
         </button>
       </header>
 

@@ -69,6 +69,28 @@
     color: var(--text-main);
 }
 
+
+.playlist-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.playlist-column-header h3 {
+    margin: 0;
+}
+
+.collapse-btn {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
 .filter-input {
     width: 100%;
     box-sizing: border-box;
