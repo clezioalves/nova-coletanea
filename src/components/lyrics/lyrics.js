@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./lyrics.css";
 
 const Lyrics = (props) => {
@@ -9,10 +9,32 @@ const Lyrics = (props) => {
     return line.time <= currentTime && currentTime < nextLineTime;
   });
 
+  const lineRefs = useRef([]);
+
+  useEffect(() => {
+    const highlightedLine = lineRefs.current[currentLineIndex];
+
+    if (!highlightedLine) {
+      return;
+    }
+
+    highlightedLine.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest",
+    });
+  }, [currentLineIndex]);
+
   return lyrics.length !== 0 ? (
     <div className="lyrics-container">
       {lyrics.map((line, index) => (
-        <div key={index} className={`lyrics-line ${index === currentLineIndex ? "highlighted" : ""}`}>
+        <div
+          key={index}
+          ref={(element) => {
+            lineRefs.current[index] = element;
+          }}
+          className={`lyrics-line ${index === currentLineIndex ? "highlighted" : ""}`}
+        >
           {line.text}
         </div>
       ))}
