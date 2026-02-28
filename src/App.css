@@ -1,38 +1,75 @@
 .App {
-    text-align: center;font-family: sans-serif;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
   min-height: 100vh;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  background: var(--app-bg);
+  color: var(--text-main);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.theme-light {
+  --app-bg: #f5f7fb;
+  --card-bg: #ffffff;
+  --panel-bg: #ffffff;
+  --section-left-bg: #eef3ff;
+  --section-right-bg: #f8faff;
+  --border-color: #dde5f3;
+  --text-main: #0d1b2a;
+  --text-muted: #4b5563;
+  --accent: #2563eb;
+  --accent-contrast: #ffffff;
+  --progress-track: #d3d8e2;
+}
+
+.theme-dark {
+  --app-bg: #0a0d14;
+  --card-bg: #121826;
+  --panel-bg: #1a2335;
+  --section-left-bg: #0f1624;
+  --section-right-bg: #0c1220;
+  --border-color: #263247;
+  --text-main: #f3f4f6;
+  --text-muted: #9aa6be;
+  --accent: #60a5fa;
+  --accent-contrast: #0a0d14;
+  --progress-track: #334155;
+}
+
+.app-toolbar {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--panel-bg);
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-.App-link {
-  color: #61dafb;
+.app-toolbar h1 {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.8vw, 1.4rem);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.theme-toggle-btn {
+  border: 1px solid var(--border-color);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .app-toolbar {
+    padding: 12px;
   }
-  to {
-    transform: rotate(360deg);
+
+  .theme-toggle-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
   }
 }

@@ -1,20 +1,30 @@
 .lyrics-container {
     text-align: center;
-    height: 80vh;
+    height: 100%;
+    min-height: 320px;
+    color: var(--text-main);
 }
 
 .lyrics-line {
     font-size: 16px;
-    color: #777;
+    color: var(--text-muted);
     margin: 8px 0;
     font-weight: 500;
 }
 
 .highlighted {
-    color: #007bff;
+    color: var(--accent);
     font-size: 20px;
-    margin: 8px 0;
+    margin: 5px 0;
     font-weight: 700;
-    margin-top: 5px;
-    margin-bottom: 5px;
+}
+
+@media (max-width: 640px) {
+    .lyrics-line {
+        font-size: 15px;
+    }
+
+    .highlighted {
+        font-size: 18px;
+    }
 }
