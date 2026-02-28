@@ -26,30 +26,18 @@ const buildUcUrl = (fileId) => `/drive/${fileId}?export=download`;
 const buildAltMediaUrl = (fileId) => `/drive/${fileId}?alt=media`;
 
 export const loadMusicDB = async () => {
-  // the listing still needs an API key on the client side; it can be plain or
-  // encrypted via the same mechanism used in setupProxy if desired.
-  const encrypted = 'OvhqbQauHil0/B4CUlicuQDVB/SnBdfmGy8Od7A79VfaZBG62EDUcFlIgqTefD9Bpcqf9p2gYXXjiHiUej+XqrgMV+C805Xt7fvjqmLnO5vKOfjpTA==';
-  const pass = 'novacoletanea';
+  // the listing needs a Google API key on the client side. we expect callers
+  // to configure REACT_APP_GOOGLE_API_KEY in their environment. a hardcoded
+  // fallback is provided merely for local development convenience.
+  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
 
-  let apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
-  if (encrypted && pass) {
-    try {
-      const { scryptSync, createDecipheriv } = require('crypto');
-      const buf = Buffer.from(encrypted, 'base64');
-      const salt = buf.slice(0, 16);
-      const iv = buf.slice(16, 28);
-      const tag = buf.slice(28, 44);
-      const ciphertext = buf.slice(44);
-      const key = scryptSync(pass, salt, 32);
-      const decipher = createDecipheriv('aes-256-gcm', key, iv);
-      decipher.setAuthTag(tag);
-      apiKey = Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8');
-    } catch (err) {
-      console.warn('failed to decrypt API key in musicData', err);
-    }
+  if (!process.env.REACT_APP_GOOGLE_API_KEY) {
+    console.warn('REACT_APP_GOOGLE_API_KEY not set; using development fallback');
   }
 
   if (!apiKey) {
+    // should never happen since we have a fallback, but keep the check for
+    // completeness in case future changes remove the hardcoded key.
     throw new Error(
       "Configure REACT_APP_GOOGLE_API_KEY para listar os áudios da pasta pública do Google Drive."
     );
