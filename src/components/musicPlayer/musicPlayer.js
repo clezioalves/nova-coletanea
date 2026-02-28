@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import "./musicPlayer.css";
 import "./progressBar.css";
 import { IconContext } from "react-icons";
@@ -8,20 +8,21 @@ import { loadMusicDB } from "../../resources/musicData";
 
 const MusicPlayer = (props) => {
   const [songs, setSongs] = useState([]);
+  const [selectedSongIds, setSelectedSongIds] = useState([]);
+  const [filterTerm, setFilterTerm] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [loadingTrack, setLoadingTrack] = useState(false);
   const [loadingLibrary, setLoadingLibrary] = useState(true);
   const [loadError, setLoadError] = useState("");
-  const audioRef = useRef(null);
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     const fetchSongs = async () => {
       try {
         const driveSongs = await loadMusicDB();
-        console.log('driveSongs', driveSongs);
         setSongs(driveSongs);
       } catch (error) {
         setLoadError(error.message);
@@ -33,58 +34,53 @@ const MusicPlayer = (props) => {
     fetchSongs();
   }, []);
 
-  const currentSong = songs[currentSongIndex];
+  const selectedSongs = useMemo(
+    () => songs.filter((song) => selectedSongIds.includes(song.id)),
+    [songs, selectedSongIds]
+  );
 
-  // Probe a URL (HEAD) to log HTTP status and content-type for debugging.
-  const probeUrl = async (url) => {
-    if (!url) return null;
-    try {
-      const res = await fetch(url, { method: "HEAD", mode: "cors" });
-      console.log("probeUrl:", url, "status:", res.status, "content-type:", res.headers.get("content-type"));
-      return res;
-    } catch (err) {
-      console.warn("probeUrl failed for", url, err);
-      return null;
+  const availableSongs = useMemo(
+    () => songs.filter((song) => !selectedSongIds.includes(song.id)),
+    [songs, selectedSongIds]
+  );
+
+  const filteredAvailableSongs = useMemo(() => {
+    const normalizedFilter = filterTerm.trim().toLowerCase();
+
+    if (!normalizedFilter) {
+      return availableSongs;
     }
-  };
+
+    return availableSongs.filter((song) => {
+      const searchable = `${song.title} ${song.artist} ${song.album}`.toLowerCase();
+      return searchable.includes(normalizedFilter);
+    });
+  }, [availableSongs, filterTerm]);
+
+  const currentSong = selectedSongs[currentSongIndex];
+
+  useEffect(() => {
+    if (currentSongIndex >= selectedSongs.length) {
+      setCurrentSongIndex(0);
+      setCurrentTime(0);
+      setDuration(0);
+      setIsPlaying(false);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    }
+  }, [currentSongIndex, selectedSongs.length]);
 
   const setTrackAndPlay = useCallback(
     (nextIndex) => {
-      if (!audioRef.current || songs.length === 0) {
+      if (!audioRef.current || selectedSongs.length === 0) {
         return;
       }
 
       setCurrentSongIndex(nextIndex);
       setCurrentTime(0);
       audioRef.current.pause();
-      // set primary src and prepare an error fallback to srcAlt
-      const primarySrc = songs[nextIndex].src;
-      const fallbackSrc = songs[nextIndex].srcAlt;
-      audioRef.current.src = primarySrc;
-      audioRef.current.dataset.triedAlt = "false";
-      audioRef.current.onerror = () => {
-        // Log and probe the failing URL (may be blocked by CORS but helpful when allowed)
-        (async () => {
-          const failing = audioRef.current && audioRef.current.currentSrc;
-          console.warn("audio onerror (primary)", failing);
-          await probeUrl(failing);
-
-          // try fallback once
-          if (fallbackSrc && audioRef.current.dataset.triedAlt !== "true") {
-            audioRef.current.dataset.triedAlt = "true";
-            console.log("Trying fallback audio src:", fallbackSrc);
-            audioRef.current.src = fallbackSrc;
-            audioRef.current.load();
-            // attempt to play, ignore promise rejection
-            audioRef.current.play().catch(() => {});
-            return;
-          }
-
-          setLoadingTrack(false);
-          setIsPlaying(false);
-          setLoadError("Não foi possível carregar a fonte de áudio.");
-        })();
-      };
+      audioRef.current.src = selectedSongs[nextIndex].src;
       audioRef.current.load();
       setLoadingTrack(true);
 
@@ -95,48 +91,11 @@ const MusicPlayer = (props) => {
         setIsPlaying(true);
       };
     },
-    [songs]
+    [selectedSongs]
   );
 
-  // setup onerror fallback for the currently selected song (covers initial render)
-  useEffect(() => {
-    if (!audioRef.current || !currentSong) return;
-
-    // use the srcAlt as-is (don't append arbitrary suffixes)
-    const fallbackSrc = currentSong.srcAlt;
-    audioRef.current.dataset.triedAlt = "false";
-    audioRef.current.onerror = (e) => {
-      // attempt to probe and log HTTP status/content-type; then try fallback once
-      (async () => {
-        console.warn("audio onerror", e, "currentSrc:", audioRef.current && audioRef.current.currentSrc);
-        const failing = audioRef.current && audioRef.current.currentSrc;
-        await probeUrl(failing);
-
-        if (fallbackSrc && audioRef.current.dataset.triedAlt !== "true") {
-          audioRef.current.dataset.triedAlt = "true";
-          console.log("Trying fallback audio src:", fallbackSrc);
-          audioRef.current.src = fallbackSrc;
-          audioRef.current.load();
-          audioRef.current.play().catch(() => {});
-          return;
-        }
-
-        setLoadingTrack(false);
-        setIsPlaying(false);
-        setLoadError("Não foi possível carregar a fonte de áudio.");
-      })();
-    };
-
-    // cleanup
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.onerror = null;
-      }
-    };
-  }, [currentSong]);
-
   const togglePlay = () => {
-    if (!audioRef.current || songs.length === 0) {
+    if (!audioRef.current || selectedSongs.length === 0 || !currentSong) {
       return;
     }
 
@@ -150,44 +109,44 @@ const MusicPlayer = (props) => {
   };
 
   const playNext = useCallback(() => {
-    if (songs.length === 0) {
+    if (selectedSongs.length === 0) {
       return;
     }
 
-    const nextIndex = (currentSongIndex + 1) % songs.length;
+    const nextIndex = (currentSongIndex + 1) % selectedSongs.length;
     setTrackAndPlay(nextIndex);
-  }, [currentSongIndex, setTrackAndPlay, songs.length]);
+  }, [currentSongIndex, selectedSongs.length, setTrackAndPlay]);
 
   const playPrev = () => {
-    if (songs.length === 0) {
+    if (selectedSongs.length === 0) {
       return;
     }
 
-    const prevIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    const prevIndex =
+      (currentSongIndex - 1 + selectedSongs.length) % selectedSongs.length;
     setTrackAndPlay(prevIndex);
   };
 
-  useEffect(() => {
-    // previously we used an interval that depended on `currentTime`
-    // to send updates to the lyrics component. that meant the effect
-    // was torn down and recreated on every tick, and in some cases
-    // the time seen by the lyrics lagged behind until pause.
-    //
-    // instead we now call `props.getDataForLyrics` directly inside
-    // handleTimeUpdate so the information is pushed synchronously
-    // with the audio element's `timeupdate` event. the effect is
-    // retained here only to clear any future side effects when the
-    // track changes, but it no longer watches currentTime.
-    if (!currentSong) {
-      return;
+  const handleTimeUpdate = useCallback(() => {
+    const t = audioRef.current.currentTime;
+    setCurrentTime(t);
+    if (currentSong) {
+      props.getDataForLyrics({
+        trackId: currentSong.id,
+        currentTime: t,
+        lyrics: currentSong.lyrics,
+      });
     }
-    return () => {};
-  }, [currentSong]);
+  }, [currentSong, props]);
+
+  const handleLoadedMetadata = useCallback(() => {
+    setDuration(audioRef.current.duration);
+  }, []);
 
   useEffect(() => {
     const audioElement = audioRef.current;
 
-    if (!audioElement || songs.length === 0) {
+    if (!audioElement || selectedSongs.length === 0) {
       return;
     }
 
@@ -200,23 +159,7 @@ const MusicPlayer = (props) => {
       audioElement.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audioElement.removeEventListener("ended", playNext);
     };
-  }, [playNext, songs.length]);
-
-  const handleTimeUpdate = () => {
-    const t = audioRef.current.currentTime;
-    setCurrentTime(t);
-    if (currentSong) {
-      props.getDataForLyrics({
-        trackId: currentSong.id,
-        currentTime: t,
-        lyrics: currentSong.lyrics,
-      });
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    setDuration(audioRef.current.duration);
-  };
+  }, [handleLoadedMetadata, handleTimeUpdate, playNext, selectedSongs.length]);
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -233,55 +176,72 @@ const MusicPlayer = (props) => {
     setCurrentTime(newTime);
   };
 
+  const addSongToPlaylist = (songId) => {
+    setSelectedSongIds((prev) => [...prev, songId]);
+  };
+
+  const removeSongFromPlaylist = (songId) => {
+    setSelectedSongIds((prev) => prev.filter((id) => id !== songId));
+  };
+
   const progress = (currentTime / duration) * 100 || 0;
 
   if (loadingLibrary) {
-    return <div className="music-player">Carregando músicas do Google Drive...</div>;
+    return (
+      <div className="music-player">Carregando músicas do Google Drive...</div>
+    );
   }
 
   if (loadError) {
     return <div className="music-player">{loadError}</div>;
   }
 
-  if (!currentSong) {
-    return <div className="music-player">Nenhuma música encontrada na pasta.</div>;
-  }
-
   return (
     <div className="music-player">
       <audio
         ref={audioRef}
-        src={currentSong.src}
+        src={currentSong?.src}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
       ></audio>
+
       <div className="component">
-        <h2 className="playerTitle">{loadingTrack ? "Loading..." : currentSong.album}</h2>
-        <div className="musicCover">
-          <img className="albumArtImage" src={currentSong.art} alt={currentSong.title} />
-        </div>
+        <h2 className="playerTitle">
+          {currentSong
+            ? loadingTrack
+              ? "Loading..."
+              : currentSong.album
+            : "Selecione músicas para reproduzir"}
+        </h2>
+
         <div className="progress-container">
           <div
             className="progress"
-            onClick={(e) => handleSeek((e.nativeEvent.offsetX / e.target.offsetWidth) * duration)}
+            onClick={(e) =>
+              handleSeek((e.nativeEvent.offsetX / e.target.offsetWidth) * duration)
+            }
           >
             <div className="progress-filled" style={{ width: `${progress}%` }}></div>
           </div>
         </div>
+
         <div className="track-info">
           <div className="current-time">{formatTime(currentTime)}</div>
           <div className="duration">{formatTime(duration)}</div>
         </div>
+
         <div className="musicDetails">
-          <h3 className="title">{currentSong.title}</h3>
-          <p className="subTitle">{currentSong.artist}</p>
+          <h3 className="title">{currentSong?.title || "Sem faixa selecionada"}</h3>
+          <p className="subTitle">{currentSong?.artist || ""}</p>
         </div>
+
         <div className="musicControls">
           <button className="playButton clickable" onClick={playPrev}>
             <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
               <BiSkipPrevious />
             </IconContext.Provider>
           </button>
+
           {!isPlaying ? (
             <button className="playButton clickable" onClick={togglePlay}>
               <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
@@ -295,11 +255,53 @@ const MusicPlayer = (props) => {
               </IconContext.Provider>
             </button>
           )}
+
           <button className="playButton clickable" onClick={playNext}>
             <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
               <BiSkipNext />
             </IconContext.Provider>
           </button>
+        </div>
+
+        <div className="playlist-manager">
+          <div className="playlist-column">
+            <h3>Biblioteca</h3>
+            <input
+              className="filter-input"
+              type="text"
+              placeholder="Filtrar músicas"
+              value={filterTerm}
+              onChange={(event) => setFilterTerm(event.target.value)}
+            />
+            <ul className="song-list">
+              {filteredAvailableSongs.map((song) => (
+                <li key={song.id} className="song-item">
+                  <span>{song.title}</span>
+                  <button onClick={() => addSongToPlaylist(song.id)}>Incluir</button>
+                </li>
+              ))}
+              {filteredAvailableSongs.length === 0 && (
+                <li className="empty-list">Nenhuma música disponível.</li>
+              )}
+            </ul>
+          </div>
+
+          <div className="playlist-column">
+            <h3>Lista de reprodução</h3>
+            <ul className="song-list">
+              {selectedSongs.map((song) => (
+                <li key={song.id} className="song-item">
+                  <span>{song.title}</span>
+                  <button onClick={() => removeSongFromPlaylist(song.id)}>
+                    Remover
+                  </button>
+                </li>
+              ))}
+              {selectedSongs.length === 0 && (
+                <li className="empty-list">Adicione músicas para começar.</li>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
