@@ -51,7 +51,7 @@ export const loadMusicDB = async () => {
 
   if (!apiKey) {
     throw new Error(
-      "Configure REACT_APP_GOOGLE_API_KEY para listar os áudios da pasta pública do Google Drive."
+      "Configure REACT_APP_GOOGLE_API_KEY para listar os louvores da pasta pública do Google Drive."
     );
   }
 
