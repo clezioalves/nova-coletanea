@@ -1,25 +1,37 @@
 .two-sections-layout {
   display: flex;
-  height: 100vh;
-  /* Adjust the height as needed */
+  min-height: calc(100vh - 72px);
+  gap: 14px;
+  padding: 14px;
+  box-sizing: border-box;
 }
 
 .section-left,
 .section-right {
   flex: 1;
-  padding: 20px;
-
-  /* Adjust the width, padding, and other styles as needed */
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
 }
 
 .section-left {
-  background-color: #f0f0f0;
-  /* Left section background color */
+  background-color: var(--section-left-bg);
 }
 
 .section-right {
-  background-color: #ffffff;
-  height: 95vh;
+  background-color: var(--section-right-bg);
+  max-height: calc(100vh - 104px);
   overflow: auto;
-  /* Right section background color */
+}
+
+@media (max-width: 900px) {
+  .two-sections-layout {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .section-right {
+    max-height: 45vh;
+  }
 }

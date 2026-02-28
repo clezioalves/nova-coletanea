@@ -285,27 +285,27 @@ const MusicPlayer = (props) => {
 
         <div className="musicControls">
           <button className="playButton clickable" onClick={playPrev}>
-            <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
+            <IconContext.Provider value={{ size: "3em", color: "currentColor" }}>
               <BiSkipPrevious />
             </IconContext.Provider>
           </button>
 
           {!isPlaying ? (
             <button className="playButton clickable" onClick={togglePlay}>
-              <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
+              <IconContext.Provider value={{ size: "3em", color: "currentColor" }}>
                 <AiFillPlayCircle />
               </IconContext.Provider>
             </button>
           ) : (
             <button className="playButton clickable" onClick={togglePlay}>
-              <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
+              <IconContext.Provider value={{ size: "3em", color: "currentColor" }}>
                 <AiFillPauseCircle />
               </IconContext.Provider>
             </button>
           )}
 
           <button className="playButton clickable" onClick={playNext}>
-            <IconContext.Provider value={{ size: "3em", color: "#000000" }}>
+            <IconContext.Provider value={{ size: "3em", color: "currentColor" }}>
               <BiSkipNext />
             </IconContext.Provider>
           </button>
@@ -317,7 +317,7 @@ const MusicPlayer = (props) => {
             onClick={toggleMute}
             title={isMuted ? "Ativar som" : "Silenciar"}
           >
-            <IconContext.Provider value={{ size: "1.8em", color: "#000000" }}>
+            <IconContext.Provider value={{ size: "1.8em", color: "currentColor" }}>
               {isMuted ? <HiSpeakerXMark /> : <HiSpeakerWave />}
             </IconContext.Provider>
           </button>

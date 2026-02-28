@@ -3,23 +3,21 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    background-color: #ffffff;
-    border-radius: 25px;
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
 }
 
-.playerTitle {
-    color: black;
-    text-align: center;
-}
-
-.musicDetails {
-    color: black;
+.playerTitle,
+.musicDetails,
+.title {
+    color: var(--text-main);
     text-align: center;
 }
 
 .musicControls {
     text-align: center;
-    padding-bottom: 20px;
+    padding-bottom: 16px;
 }
 
 .volume-controls {
@@ -35,7 +33,7 @@
 }
 
 .component {
-    background-color: white;
+    background-color: transparent;
     width: 100%;
 }
 
@@ -44,11 +42,12 @@
     border: none;
     align-items: center;
     justify-content: center;
+    color: var(--text-main);
 }
 
 .subTitle {
     margin-top: -1em;
-    color: #4f4f4f;
+    color: var(--text-muted);
 }
 
 .clickable {
@@ -63,10 +62,11 @@
 }
 
 .playlist-column {
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 12px;
-    background: #fafafa;
+    background: var(--panel-bg);
+    color: var(--text-main);
 }
 
 .filter-input {
@@ -74,6 +74,10 @@
     box-sizing: border-box;
     padding: 8px;
     margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-main);
 }
 
 .song-list {
@@ -89,14 +93,15 @@
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-    border-bottom: 1px solid #ececec;
+    border-bottom: 1px solid var(--border-color);
     padding: 8px 0;
 }
 
 .song-item button {
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-main);
     cursor: pointer;
     padding: 4px 8px;
 }
@@ -110,6 +115,7 @@
     display: flex;
     gap: 6px;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .reorder-btn {
@@ -119,16 +125,23 @@
 }
 
 .empty-list {
-    color: #777;
+    color: var(--text-muted);
     padding: 8px 0;
 }
 
 @media (max-width: 900px) {
     .component {
-        width: 95%;
+        width: 100%;
     }
 
     .playlist-manager {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 540px) {
+    .musicControls svg {
+        width: 2.3em;
+        height: 2.3em;
     }
 }
