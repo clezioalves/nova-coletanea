@@ -1,6 +1,7 @@
-import lyricsData from "./lyricsData.json";
-
 const GOOGLE_DRIVE_FOLDER_ID = "1dTuzWuaoVrPAKVocEq5MrOgsTQvWNZme";
+const FIREBASE_RTDB_BASE_URL =
+  process.env.REACT_APP_FIREBASE_RTDB_BASE_URL ||
+  "https://novacoletanea-c4878-default-rtdb.firebasedatabase.app";
 
 const metadataBySlug = {
   "a-sombra-de-tuas-palavras": {
@@ -96,6 +97,7 @@ export const loadMusicDB = async () => {
 
       return {
         id: file.id,
+        slug,
         title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
         artist: metadata.artist || "Artista desconhecido",
         album: metadata.album || "Nova Coletânea",
@@ -104,8 +106,24 @@ export const loadMusicDB = async () => {
         // Fallback src (same proxy with ?export=download)
         srcAlt: buildUcUrl(file.id),
         //art: metadata.art || "https://via.placeholder.com/300x300?text=Album+Art",
-        lyrics: lyricsData[slug] || [],
         order: index
       };
     });
+};
+
+export const loadLyricsBySlug = async (slug) => {
+  if (!slug) {
+    return [];
+  }
+
+  const response = await fetch(
+    `${FIREBASE_RTDB_BASE_URL}/${encodeURIComponent(slug)}.json`
+  );
+
+  if (!response.ok) {
+    throw new Error("Não foi possível carregar a letra da música selecionada.");
+  }
+
+  const lyrics = await response.json();
+  return Array.isArray(lyrics) ? lyrics : [];
 };
