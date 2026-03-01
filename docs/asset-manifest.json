@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/nova-coletanea/static/css/main.88baed8f.css",
-    "main.js": "/nova-coletanea/static/js/main.49e282fc.js",
+    "main.css": "/nova-coletanea/static/css/main.b3667107.css",
+    "main.js": "/nova-coletanea/static/js/main.6ba3e215.js",
     "static/js/453.833f96de.chunk.js": "/nova-coletanea/static/js/453.833f96de.chunk.js",
     "index.html": "/nova-coletanea/index.html",
-    "main.88baed8f.css.map": "/nova-coletanea/static/css/main.88baed8f.css.map",
-    "main.49e282fc.js.map": "/nova-coletanea/static/js/main.49e282fc.js.map",
+    "main.b3667107.css.map": "/nova-coletanea/static/css/main.b3667107.css.map",
+    "main.6ba3e215.js.map": "/nova-coletanea/static/js/main.6ba3e215.js.map",
     "453.833f96de.chunk.js.map": "/nova-coletanea/static/js/453.833f96de.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.88baed8f.css",
-    "static/js/main.49e282fc.js"
+    "static/css/main.b3667107.css",
+    "static/js/main.6ba3e215.js"
   ]
 }
