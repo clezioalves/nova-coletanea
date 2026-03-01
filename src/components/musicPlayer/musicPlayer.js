@@ -5,7 +5,7 @@ import { IconContext } from "react-icons";
 import { BiSkipNext, BiSkipPrevious } from "react-icons/bi";
 import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
-import { loadMusicDB } from "../../resources/musicData";
+import { loadLyricsBySlug, loadMusicDB } from "../../resources/musicData";
 
 const MusicPlayer = (props) => {
   const [songs, setSongs] = useState([]);
@@ -22,6 +22,7 @@ const MusicPlayer = (props) => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
+  const [lyricsBySlug, setLyricsBySlug] = useState({});
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -69,6 +70,48 @@ const MusicPlayer = (props) => {
   }, [availableSongs, filterTerm]);
 
   const currentSong = selectedSongs[currentSongIndex];
+  const currentLyrics = useMemo(
+    () => (currentSong?.slug ? lyricsBySlug[currentSong.slug] || [] : []),
+    [currentSong, lyricsBySlug]
+  );
+
+  useEffect(() => {
+    if (!currentSong?.slug || lyricsBySlug[currentSong.slug]) {
+      return;
+    }
+
+    let isSubscribed = true;
+
+    const fetchLyrics = async () => {
+      try {
+        const lyrics = await loadLyricsBySlug(currentSong.slug);
+        if (!isSubscribed) {
+          return;
+        }
+
+        setLyricsBySlug((prev) => ({
+          ...prev,
+          [currentSong.slug]: lyrics,
+        }));
+      } catch (error) {
+        if (!isSubscribed) {
+          return;
+        }
+
+        console.error(error.message);
+        setLyricsBySlug((prev) => ({
+          ...prev,
+          [currentSong.slug]: [],
+        }));
+      }
+    };
+
+    fetchLyrics();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [currentSong, lyricsBySlug]);
 
   useEffect(() => {
     if (currentSongIndex >= selectedSongs.length) {
@@ -145,10 +188,22 @@ const MusicPlayer = (props) => {
       props.getDataForLyrics({
         trackId: currentSong.id,
         currentTime: t,
-        lyrics: currentSong.lyrics,
+        lyrics: currentLyrics,
       });
     }
-  }, [currentSong, props]);
+  }, [currentLyrics, currentSong, props]);
+
+  useEffect(() => {
+    if (!currentSong) {
+      return;
+    }
+
+    props.getDataForLyrics({
+      trackId: currentSong.id,
+      currentTime,
+      lyrics: currentLyrics,
+    });
+  }, [currentLyrics, currentSong, currentTime, props]);
 
   const handleLoadedMetadata = useCallback(() => {
     setDuration(audioRef.current.duration);
