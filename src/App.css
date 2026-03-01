@@ -73,6 +73,41 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: var(--card-bg);
+}
+
+.font-size-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.font-size-btn:hover {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.font-size-display {
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
 @media (max-width: 640px) {
   .app-toolbar {
     padding: 12px;

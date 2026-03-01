@@ -234,6 +234,26 @@ const MusicPlayer = (props) => {
     setTrackAndPlay(nextIndex);
   }, [currentSongIndex, selectedSongs.length, setTrackAndPlay]);
 
+  const handleSongEnded = useCallback(() => {
+    // Ao terminar uma música, se não for a última, vai para a próxima.
+    // Se for a última, apenas pausa.
+    if (selectedSongs.length === 0) {
+      return;
+    }
+
+    if (currentSongIndex < selectedSongs.length - 1) {
+      // Não é a última, vai para a próxima
+      const nextIndex = currentSongIndex + 1;
+      setTrackAndPlay(nextIndex);
+    } else {
+      // É a última, apenas pausa
+      setIsPlaying(false);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    }
+  }, [currentSongIndex, selectedSongs.length, setTrackAndPlay]);
+
   const playPrev = () => {
     if (selectedSongs.length === 0) {
       return;
@@ -281,14 +301,14 @@ const MusicPlayer = (props) => {
 
     audioElement.addEventListener("timeupdate", handleTimeUpdate);
     audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
-    audioElement.addEventListener("ended", playNext);
+    audioElement.addEventListener("ended", handleSongEnded);
 
     return () => {
       audioElement.removeEventListener("timeupdate", handleTimeUpdate);
       audioElement.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      audioElement.removeEventListener("ended", playNext);
+      audioElement.removeEventListener("ended", handleSongEnded);
     };
-  }, [handleLoadedMetadata, handleTimeUpdate, playNext, selectedSongs.length]);
+  }, [handleLoadedMetadata, handleTimeUpdate, handleSongEnded, selectedSongs.length]);
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);

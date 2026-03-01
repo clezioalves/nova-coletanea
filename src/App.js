@@ -8,6 +8,7 @@ function App() {
   const [dataForLyrics, setDataForLyrics] = useState({});
   const [isDarkLayout, setIsDarkLayout] = useState(true);
   const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [lyricsFontSize, setLyricsFontSize] = useState(1);
 
   const handleLyricsDataFromChild = React.useCallback((data) => {
     setDataForLyrics(data);
@@ -19,6 +20,14 @@ function App() {
 
   const togglePresentationMode = () => {
     setIsPresentationMode((prev) => !prev);
+  };
+
+  const increaseFontSize = () => {
+    setLyricsFontSize((prev) => Math.min(prev + 0.2, 2));
+  };
+
+  const decreaseFontSize = () => {
+    setLyricsFontSize((prev) => Math.max(prev - 0.2, 0.6));
   };
 
   return (
@@ -35,6 +44,23 @@ function App() {
           >
             {isPresentationMode ? "Sair apresentação" : "Modo apresentação"}
           </button>
+          <div className="font-size-controls">
+            <button
+              className="font-size-btn"
+              onClick={decreaseFontSize}
+              title="Diminuir tamanho da fonte"
+            >
+              A−
+            </button>
+            <span className="font-size-display">{Math.round(lyricsFontSize * 100)}%</span>
+            <button
+              className="font-size-btn"
+              onClick={increaseFontSize}
+              title="Aumentar tamanho da fonte"
+            >
+              A+
+            </button>
+          </div>
         </div>
       </header>
 
@@ -53,6 +79,8 @@ function App() {
           <Lyrics
             lyrics={dataForLyrics.lyrics}
             currentTime={dataForLyrics.currentTime}
+            fontSize={lyricsFontSize}
+            presentationMode={isPresentationMode}
           />
         </div>
       </div>
