@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import "./lyrics.css";
 
 const Lyrics = (props) => {
-  const { lyrics = [], currentTime } = props;
+  const { lyrics = [], currentTime, presentationMode = false } = props;
 
   const currentLineIndex = lyrics.findIndex((line, index) => {
     const nextLineTime = lyrics[index + 1] ? lyrics[index + 1].time : Number.MAX_VALUE;
@@ -26,7 +26,7 @@ const Lyrics = (props) => {
   }, [currentLineIndex]);
 
   return lyrics.length !== 0 ? (
-    <div className="lyrics-container">
+    <div className={`lyrics-container ${presentationMode ? "presentation" : ""}`}>
       {lyrics.map((line, index) => (
         <div
           key={index}

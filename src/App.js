@@ -53,6 +53,7 @@ function App() {
           <Lyrics
             lyrics={dataForLyrics.lyrics}
             currentTime={dataForLyrics.currentTime}
+            presentationMode={isPresentationMode}
           />
         </div>
       </div>

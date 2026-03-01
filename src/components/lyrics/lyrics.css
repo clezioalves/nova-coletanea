@@ -28,3 +28,16 @@
         font-size: 18px;
     }
 }
+
+.lyrics-container.presentation {
+    padding-block: 28vh;
+    min-height: calc(100vh - 220px);
+    box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+    .lyrics-container.presentation {
+        padding-block: 22vh;
+        min-height: calc(100vh - 180px);
+    }
+}
