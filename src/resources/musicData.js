@@ -6,9 +6,8 @@ const metadataBySlug = {
   "a-sombra-de-tuas-palavras": {
     title: "A sombra de Tuas Palavras",
     artist: "Filho Varão",
-    album: "Coletânea Filho Varão",
-    art: "https://teste.png"
-  }
+    album: "Coletânea Filho Varão"
+  },
 };
 
 const createSlug = (fileName) =>
@@ -99,12 +98,12 @@ export const loadMusicDB = async () => {
         id: file.id,
         title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
         artist: metadata.artist || "Artista desconhecido",
-        album: metadata.album || "Google Drive",
+        album: metadata.album || "Nova Coletânea",
         // Primary src: proxy endpoint, api key added by proxy
         src: buildAltMediaUrl(file.id),
         // Fallback src (same proxy with ?export=download)
         srcAlt: buildUcUrl(file.id),
-        art: metadata.art || "https://via.placeholder.com/300x300?text=Album+Art",
+        //art: metadata.art || "https://via.placeholder.com/300x300?text=Album+Art",
         lyrics: lyricsData[slug] || [],
         order: index
       };

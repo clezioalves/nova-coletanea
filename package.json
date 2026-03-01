@@ -17,7 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "postbuild": "cpx \"build/**/*\" docs",
+    "postbuild": "rimraf docs && cpx \"build/**/*\" docs",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "cpx": "^1.5.0",
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^6.3.0",
+    "rimraf": "^5.0.10"
   }
 }
