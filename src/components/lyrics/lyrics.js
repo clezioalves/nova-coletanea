@@ -26,7 +26,7 @@ const Lyrics = (props) => {
   }, [currentLineIndex]);
 
   return lyrics.length !== 0 ? (
-    <div className={`lyrics-container ${presentationMode ? "presentation" : ""}`} style={{ fontSize: `${fontSize}em` }}>
+    <div className={`lyrics-container ${presentationMode ? "presentation" : ""}`}>
       {lyrics.map((line, index) => (
         <div
           key={index}
@@ -34,6 +34,7 @@ const Lyrics = (props) => {
             lineRefs.current[index] = element;
           }}
           className={`lyrics-line ${index === currentLineIndex ? "highlighted" : ""}`}
+          style={{ fontSize: `${fontSize}em` }}
         >
           {line.text}
         </div>
