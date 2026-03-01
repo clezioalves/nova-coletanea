@@ -53,6 +53,12 @@
   font-size: clamp(1.05rem, 2.8vw, 1.4rem);
 }
 
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .theme-toggle-btn {
   border: 1px solid var(--border-color);
   background: var(--accent);
@@ -63,9 +69,17 @@
   font-weight: 600;
 }
 
+.theme-toggle-btn.active {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
 @media (max-width: 640px) {
   .app-toolbar {
     padding: 12px;
+  }
+
+  .toolbar-actions {
+    gap: 6px;
   }
 
   .theme-toggle-btn {

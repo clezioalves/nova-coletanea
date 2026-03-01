@@ -122,7 +122,7 @@ const MusicPlayer = (props) => {
   }, [availableSongs, filterTerm]);
 
   const currentSong = selectedSongs[currentSongIndex];
-  const { getDataForLyrics } = props;
+  const { getDataForLyrics, presentationMode = false } = props;
 
   const currentLyrics = useMemo(
     () => (currentSong?.slug ? lyricsBySlug[currentSong.slug] || [] : []),
@@ -369,7 +369,7 @@ const MusicPlayer = (props) => {
 
   if (loadingLibrary) {
     return (
-      <div className="music-player">Carregando louvores do Google Drive...</div>
+      <div className={`music-player ${presentationMode ? "presentation" : ""}`}>Carregando louvores do Google Drive...</div>
     );
   }
 
@@ -378,7 +378,7 @@ const MusicPlayer = (props) => {
   }
 
   return (
-    <div className="music-player">
+    <div className={`music-player ${presentationMode ? "presentation" : ""}`}>
       <audio
         ref={audioRef}
         src={currentSong?.src}
@@ -466,99 +466,101 @@ const MusicPlayer = (props) => {
           />
         </div>
 
-        <div className="playlist-manager">
-          <div className="playlist-column">
-            <div className="playlist-column-header">
-              <h3>Biblioteca</h3>
-              <button
-                className="collapse-btn"
-                onClick={() => setIsLibraryMinimized((prev) => !prev)}
-                aria-expanded={!isLibraryMinimized}
-              >
-                {isLibraryMinimized ? "Expandir" : "Minimizar"}
-              </button>
-            </div>
-
-            {!isLibraryMinimized && (
-              <>
-                <input
-                  className="filter-input"
-                  type="text"
-                  placeholder="Filtrar louvores"
-                  value={filterTerm}
-                  onChange={(event) => setFilterTerm(event.target.value)}
-                />
-                <ul className="song-list">
-                  {filteredAvailableSongs.map((song) => (
-                    <li key={song.id} className="song-item">
-                      <span>{song.title}</span>
-                      <button onClick={() => addSongToPlaylist(song.id)}>Incluir</button>
-                    </li>
-                  ))}
-                  {filteredAvailableSongs.length === 0 && (
-                    <li className="empty-list">Nenhum louvor disponível.</li>
-                  )}
-                </ul>
-              </>
-            )}
-          </div>
-
-          <div className="playlist-column">
-            <div className="playlist-column-header">
-              <h3>Lista de reprodução</h3>
-              <div className="playlist-column-actions">
-                {selectedSongs.length > 0 && (
-                  <button className="collapse-btn" onClick={clearPlaylist}>
-                    Limpar lista
-                  </button>
-                )}
+        {!presentationMode && (
+          <div className="playlist-manager">
+            <div className="playlist-column">
+              <div className="playlist-column-header">
+                <h3>Biblioteca</h3>
                 <button
                   className="collapse-btn"
-                  onClick={() => setIsPlaylistMinimized((prev) => !prev)}
-                  aria-expanded={!isPlaylistMinimized}
+                  onClick={() => setIsLibraryMinimized((prev) => !prev)}
+                  aria-expanded={!isLibraryMinimized}
                 >
-                  {isPlaylistMinimized ? "Expandir" : "Minimizar"}
+                  {isLibraryMinimized ? "Expandir" : "Minimizar"}
                 </button>
               </div>
+
+              {!isLibraryMinimized && (
+                <>
+                  <input
+                    className="filter-input"
+                    type="text"
+                    placeholder="Filtrar louvores"
+                    value={filterTerm}
+                    onChange={(event) => setFilterTerm(event.target.value)}
+                  />
+                  <ul className="song-list">
+                    {filteredAvailableSongs.map((song) => (
+                      <li key={song.id} className="song-item">
+                        <span>{song.title}</span>
+                        <button onClick={() => addSongToPlaylist(song.id)}>Incluir</button>
+                      </li>
+                    ))}
+                    {filteredAvailableSongs.length === 0 && (
+                      <li className="empty-list">Nenhum louvor disponível.</li>
+                    )}
+                  </ul>
+                </>
+              )}
             </div>
 
-            {!isPlaylistMinimized && (
-              <ul className="song-list">
-                {selectedSongs.map((song, index) => (
-                  <li key={song.id} className="song-item playlist-item">
-                    <span>{song.title}</span>
-                    <div className="playlist-buttons">
-                      {index > 0 && (
-                        <button
-                          onClick={() => moveSongUp(index)}
-                          title="Mover para cima"
-                          className="reorder-btn"
-                        >
-                          ↑
+            <div className="playlist-column">
+              <div className="playlist-column-header">
+                <h3>Lista de reprodução</h3>
+                <div className="playlist-column-actions">
+                  {selectedSongs.length > 0 && (
+                    <button className="collapse-btn" onClick={clearPlaylist}>
+                      Limpar lista
+                    </button>
+                  )}
+                  <button
+                    className="collapse-btn"
+                    onClick={() => setIsPlaylistMinimized((prev) => !prev)}
+                    aria-expanded={!isPlaylistMinimized}
+                  >
+                    {isPlaylistMinimized ? "Expandir" : "Minimizar"}
+                  </button>
+                </div>
+              </div>
+
+              {!isPlaylistMinimized && (
+                <ul className="song-list">
+                  {selectedSongs.map((song, index) => (
+                    <li key={song.id} className="song-item playlist-item">
+                      <span>{song.title}</span>
+                      <div className="playlist-buttons">
+                        {index > 0 && (
+                          <button
+                            onClick={() => moveSongUp(index)}
+                            title="Mover para cima"
+                            className="reorder-btn"
+                          >
+                            ↑
+                          </button>
+                        )}
+                        {index < selectedSongs.length - 1 && (
+                          <button
+                            onClick={() => moveSongDown(index)}
+                            title="Mover para baixo"
+                            className="reorder-btn"
+                          >
+                            ↓
+                          </button>
+                        )}
+                        <button onClick={() => removeSongFromPlaylist(song.id)}>
+                          Remover
                         </button>
-                      )}
-                      {index < selectedSongs.length - 1 && (
-                        <button
-                          onClick={() => moveSongDown(index)}
-                          title="Mover para baixo"
-                          className="reorder-btn"
-                        >
-                          ↓
-                        </button>
-                      )}
-                      <button onClick={() => removeSongFromPlaylist(song.id)}>
-                        Remover
-                      </button>
-                    </div>
-                  </li>
-                ))}
-                {selectedSongs.length === 0 && (
-                  <li className="empty-list">Adicione louvores para começar.</li>
-                )}
-              </ul>
-            )}
+                      </div>
+                    </li>
+                  ))}
+                  {selectedSongs.length === 0 && (
+                    <li className="empty-list">Adicione louvores para começar.</li>
+                  )}
+                </ul>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
