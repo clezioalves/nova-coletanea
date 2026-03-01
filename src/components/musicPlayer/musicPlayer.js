@@ -70,6 +70,8 @@ const MusicPlayer = (props) => {
   }, [availableSongs, filterTerm]);
 
   const currentSong = selectedSongs[currentSongIndex];
+  const { getDataForLyrics } = props;
+
   const currentLyrics = useMemo(
     () => (currentSong?.slug ? lyricsBySlug[currentSong.slug] || [] : []),
     [currentSong, lyricsBySlug]
@@ -185,25 +187,25 @@ const MusicPlayer = (props) => {
     const t = audioRef.current.currentTime;
     setCurrentTime(t);
     if (currentSong) {
-      props.getDataForLyrics({
+      getDataForLyrics({
         trackId: currentSong.id,
         currentTime: t,
         lyrics: currentLyrics,
       });
     }
-  }, [currentLyrics, currentSong, props]);
+  }, [currentLyrics, currentSong, getDataForLyrics]);
 
   useEffect(() => {
     if (!currentSong) {
       return;
     }
 
-    props.getDataForLyrics({
+    getDataForLyrics({
       trackId: currentSong.id,
       currentTime,
       lyrics: currentLyrics,
     });
-  }, [currentLyrics, currentSong, currentTime, props]);
+  }, [currentLyrics, currentSong, currentTime, getDataForLyrics]);
 
   const handleLoadedMetadata = useCallback(() => {
     setDuration(audioRef.current.duration);

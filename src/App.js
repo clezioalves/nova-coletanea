@@ -8,9 +8,9 @@ function App() {
   const [dataForLyrics, setDataForLyrics] = useState({});
   const [isDarkLayout, setIsDarkLayout] = useState(true);
 
-  const handleLyricsDataFromChild = (data) => {
+  const handleLyricsDataFromChild = React.useCallback((data) => {
     setDataForLyrics(data);
-  };
+  }, []);
 
   const toggleLayoutTheme = () => {
     setIsDarkLayout((prev) => !prev);
