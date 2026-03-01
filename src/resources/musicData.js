@@ -1,7 +1,7 @@
 const GOOGLE_DRIVE_FOLDER_ID = "1dTuzWuaoVrPAKVocEq5MrOgsTQvWNZme";
 const FIREBASE_RTDB_BASE_URL =
   process.env.REACT_APP_FIREBASE_RTDB_BASE_URL ||
-  "https://novacoletanea-c4878-default-rtdb.firebasedatabase.app";
+  "https://novacoletanea-c4878-default-rtdb.firebaseio.com";
 
 const metadataBySlug = {
   "a-sombra-de-tuas-palavras": {
