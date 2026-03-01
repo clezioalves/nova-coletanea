@@ -82,6 +82,11 @@
     margin: 0;
 }
 
+.playlist-column-actions {
+    display: flex;
+    gap: 8px;
+}
+
 .collapse-btn {
     border: 1px solid var(--border-color);
     border-radius: 6px;

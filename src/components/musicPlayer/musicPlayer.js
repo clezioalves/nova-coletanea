@@ -7,9 +7,61 @@ import { AiFillPlayCircle, AiFillPauseCircle } from "react-icons/ai";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { loadLyricsBySlug, loadMusicDB } from "../../resources/musicData";
 
+const PLAYLIST_COOKIE_NAME = "nova_playlist";
+const PLAYLIST_COOKIE_DURATION_HOURS = 24;
+
+const readPlaylistFromCookie = () => {
+  if (typeof document === "undefined") {
+    return [];
+  }
+
+  const cookieEntry = document.cookie
+    .split(";")
+    .map((entry) => entry.trim())
+    .find((entry) => entry.startsWith(`${PLAYLIST_COOKIE_NAME}=`));
+
+  if (!cookieEntry) {
+    return [];
+  }
+
+  const cookieValue = cookieEntry.split("=")[1] || "";
+
+  try {
+    const parsed = JSON.parse(decodeURIComponent(cookieValue));
+    return Array.isArray(parsed)
+      ? parsed.filter((item) => Number.isInteger(item) || typeof item === "string")
+      : [];
+  } catch (error) {
+    console.error("Falha ao ler a playlist salva em cookie.", error);
+    return [];
+  }
+};
+
+const persistPlaylistInCookie = (songIds) => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const expiresAt = new Date(
+    Date.now() + PLAYLIST_COOKIE_DURATION_HOURS * 60 * 60 * 1000
+  );
+
+  document.cookie = `${PLAYLIST_COOKIE_NAME}=${encodeURIComponent(
+    JSON.stringify(songIds)
+  )}; expires=${expiresAt.toUTCString()}; path=/; SameSite=Lax`;
+};
+
+const clearPlaylistCookie = () => {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  document.cookie = `${PLAYLIST_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+};
+
 const MusicPlayer = (props) => {
   const [songs, setSongs] = useState([]);
-  const [selectedSongIds, setSelectedSongIds] = useState([]);
+  const [selectedSongIds, setSelectedSongIds] = useState(() => readPlaylistFromCookie());
   const [filterTerm, setFilterTerm] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [loadingTrack, setLoadingTrack] = useState(false);
@@ -126,6 +178,15 @@ const MusicPlayer = (props) => {
       }
     }
   }, [currentSongIndex, selectedSongs.length]);
+
+  useEffect(() => {
+    if (selectedSongIds.length === 0) {
+      clearPlaylistCookie();
+      return;
+    }
+
+    persistPlaylistInCookie(selectedSongIds);
+  }, [selectedSongIds]);
 
   const setTrackAndPlay = useCallback(
     (nextIndex) => {
@@ -250,6 +311,19 @@ const MusicPlayer = (props) => {
 
   const removeSongFromPlaylist = (songId) => {
     setSelectedSongIds((prev) => prev.filter((id) => id !== songId));
+  };
+
+  const clearPlaylist = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    setIsPlaying(false);
+    setCurrentSongIndex(0);
+    setCurrentTime(0);
+    setDuration(0);
+    setSelectedSongIds([]);
   };
 
   const moveSongUp = useCallback((index) => {
@@ -432,13 +506,20 @@ const MusicPlayer = (props) => {
           <div className="playlist-column">
             <div className="playlist-column-header">
               <h3>Lista de reprodução</h3>
-              <button
-                className="collapse-btn"
-                onClick={() => setIsPlaylistMinimized((prev) => !prev)}
-                aria-expanded={!isPlaylistMinimized}
-              >
-                {isPlaylistMinimized ? "Expandir" : "Minimizar"}
-              </button>
+              <div className="playlist-column-actions">
+                {selectedSongs.length > 0 && (
+                  <button className="collapse-btn" onClick={clearPlaylist}>
+                    Limpar lista
+                  </button>
+                )}
+                <button
+                  className="collapse-btn"
+                  onClick={() => setIsPlaylistMinimized((prev) => !prev)}
+                  aria-expanded={!isPlaylistMinimized}
+                >
+                  {isPlaylistMinimized ? "Expandir" : "Minimizar"}
+                </button>
+              </div>
             </div>
 
             {!isPlaylistMinimized && (
