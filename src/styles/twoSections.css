@@ -35,3 +35,32 @@
     max-height: 45vh;
   }
 }
+
+
+.presentation-layout {
+  display: block;
+  min-height: auto;
+}
+
+.presentation-player {
+  position: sticky;
+  top: 76px;
+  z-index: 3;
+  margin-bottom: 14px;
+}
+
+.presentation-lyrics {
+  max-height: none;
+  min-height: calc(100vh - 220px);
+}
+
+@media (max-width: 900px) {
+  .presentation-player {
+    top: 70px;
+  }
+
+  .presentation-lyrics {
+    min-height: calc(100vh - 180px);
+    max-height: none;
+  }
+}

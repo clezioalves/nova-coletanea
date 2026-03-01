@@ -172,3 +172,19 @@
         height: 2.3em;
     }
 }
+
+
+.music-player.presentation {
+    align-items: flex-start;
+    padding: 16px 20px;
+}
+
+.music-player.presentation .component {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.music-player.presentation .musicControls,
+.music-player.presentation .volume-controls {
+    padding-bottom: 10px;
+}
